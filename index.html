@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clickboard - Local Clipboard Manager</title>
+    <meta name="description" content="Clickboard is a local clipboard manager that helps you store and organize text and images directly in your browser. Securely manage your clipboard history without server interaction.">
+    <meta name="keywords" content="clipboard, clipboard manager, local clipboard, text manager, image manager, browser clipboard, productivity, utility, history, save clipboard">
+    <link rel="canonical" href="https://pirillo.com/arcade/clickboard.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pirillo.com/arcade/clickboard.html">
+    <meta property="og:title" content="Clickboard - Local Clipboard Manager">
+    <meta property="og:description" content="Clickboard is a local clipboard manager that helps you store and organize text and images directly in your browser. Securely manage your clipboard history without server interaction.">
+    <meta property="og:image" content="https://pirillo.com/arcade/images/clickboard.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://pirillo.com/arcade/clickboard.html">
+    <meta property="twitter:title" content="Clickboard - Local Clipboard Manager">
+    <meta property="twitter:description" content="Clickboard is a local clipboard manager that helps you store and organize text and images directly in your browser. Securely manage your clipboard history without server interaction.">
+    <meta name="twitter:creator" content="@ChrisPirillo">
+    <meta property="twitter:image" content="https://pirillo.com/arcade/images/clickboard.png">
+    <meta name="author" content="Chris Pirillo">
+
+    <!-- Preconnect to improve loading speed for critical third-party resources -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Preload fonts to prevent FOIT/FOUT and ensure quick display -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/michroma/v20/PnAUVhwxktzC9roUeP2_3Q.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/rajdhani/v13/LBRqEqg7oZEJMyv0EwN_S5rQ.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/rajdhani/v13/LBRrEqg7oZEJMyv0EwN_u75C-Q.woff2" as="font" type="font/woff2" crossorigin>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- New Google Fonts: Michroma for headings (futuristic/industrial), Rajdhani for body (modern sans-serif) -->
+    <!-- Added &display=swap to encourage font swapping to prevent invisible text -->
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Analytics Script (async loaded) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1CQ4D3VQ3L"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1CQ4D3VQ3L');
+    </script>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Clickboard - Local Clipboard Manager",
+      "description": "Clickboard is a local clipboard manager that helps you store and organize text and images directly in your browser. Securely manage your clipboard history without server interaction.",
+      "url": "https://pirillo.com/arcade/clickboard.html",
+      "image": "https://pirillo.com/arcade/images/clickboard.png",
+      "author": {
+        "@type": "Person",
+        "name": "Chris Pirillo",
+        "url": "https://pirillo.com",
+        "sameAs": ["https://twitter.com/ChrisPirillo"]
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Pirillo.com",
+        "url": "https://pirillo.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://pirillo.com/images/pirillo-logo.png"
+        }
+      }
+    }
+    </script>
+
+    <style>
+        /* Define a CSS variable for consistent spacing */
+        :root {
+            --equidistant-spacing: 2rem; /* 32px */
+        }
+
+        /* Custom Styles for Brushed Metal Theme */
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Rajdhani', sans-serif; /* Applied new body font */
+            background-color: #2F363F; /* Dark Steel Gray background */
+            background-image: none;
+            color: #EEF3F8; /* Light gray text for contrast */
+            display: flex; /* Use flexbox for overall layout */
+            flex-direction: column; /* Stack items vertically */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+        }
+
+        /* Prevent body scrolling when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* New font for specific elements */
+        .font-michroma { 
+            font-family: 'Michroma', sans-serif; 
+            font-display: swap; /* Ensures fallback text is displayed quickly */
+        }
+        .clickboard-header { 
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6), 
+                         -1px -1px 0px rgba(255,255,255,0.1); 
+            font-family: 'Michroma', sans-serif; /* Applied new header font */
+            color: #CEE5F2; /* Light Blue-Gray for metallic sheen */
+            margin: 0; /* Removed default margins from h1 */
+            padding: 0; 
+            line-height: 1; 
+            font-display: swap; /* Ensures fallback text is displayed quickly */
+            /* FIX: Add responsive scaling for header text */
+            font-size: clamp(2.5rem, 8vw, 6rem); /* Scales from 40px to 96px */
+        }
+        /* Explicitly remove margins from header element too */
+        header#appHeader {
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        /* Ensure paper-note elements correctly fill space and don't shrink unexpectedly */
+        .paper-note {
+            background-color: #5C6870; /* Medium Steel Gray for panels/notes */
+            border: 1px solid #8C9DAA; /* Lighter Steel Gray border */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5), 
+                        inset 1px 1px 3px rgba(255,255,255,0.15), 
+                        inset -1px -1px 3px rgba(0,0,0,0.3); 
+            border-radius: 0.5rem; 
+            color: #EEF3F8; 
+            width: 100%; /* Ensure full width in its column */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            /* Removed the simple opacity transition for more granular control below */
+        }
+        /* Adjusted hover for layout stability: deepen shadow only */
+        .paper-note-interactive {
+            transition: box-shadow 0.3s ease; /* Transition only box-shadow */
+        }
+        .paper-note-interactive:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.9), /* Deeper shadow on hover */
+                        inset 1px 1px 3px rgba(255,255,255,0.2), 
+                        inset -1px -1px 3px rgba(0,0,0,0.4); 
+        }
+
+        /* Specific styles for the infoBox to allow it to collapse properly */
+        #infoBox {
+            /* Removed min-height to allow full collapse */
+            overflow: hidden; /* Important for max-height transition */
+            /* Apply transition for smooth collapse/expand */
+            transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, 
+                        padding-top 0.3s ease-in-out, padding-bottom 0.3s ease-in-out, 
+                        margin-bottom 0.3s ease-in-out;
+            will-change: opacity, max-height, padding, margin; /* Optimize for animation */
+        }
+
+        .btn-skeuo {
+            background: linear-gradient(to bottom, #7C8F9E 0%, #606E7A 100%); /* Metallic gradient */
+            border: 1px solid #B5C8D4; /* Silver-blue border */
+            border-radius: 8px;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);
+            color: #EEF3F8; 
+            text-shadow: 0 1px 0 rgba(0,0,0,0.5); 
+            transition: all 0.2s ease;
+        }
+        .btn-skeuo:hover { background: linear-gradient(to bottom, #8C9DAA 0%, #7C8F9E 100%); }
+        .btn-skeuo:active { 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); 
+            background: linear-gradient(to top, #7C8F9E 0%, #606E7A 100%); 
+        }
+        .input-skeuo, .select-skeuo {
+            border: 1px solid #606E7A; /* Steel Gray border */
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); 
+            background-color: #455059; /* Slightly darker steel gray background */
+            color: #EEF3F8; 
+            padding-left: 0.75rem; 
+            padding-right: 0.75rem; 
+        }
+        .input-skeuo::placeholder {
+            color: #A1B2C0; /* Medium Blue-Gray */
+            opacity: 0.7;
+        }
+        .select-skeuo option {
+            background-color: #455059; 
+            color: #EEF3F8;
+        }
+        .btn-danger {
+            background: #B85C4F; /* Muted Copper/Rust */
+            border: 1px solid #CC7B6E; /* Darker Rust */
+            box-shadow: 0 2px 2px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);
+            color: #EEF3F8; 
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+            border-radius: 8px; 
+        }
+        .btn-danger:hover { background: #CC7B6E; }
+        #infoBoxCloseBtn { 
+            color: #A1B2C0; 
+            text-shadow: none;
+            /* Match modal close button styling */
+            background: none;
+            border: none;
+            font-size: 2rem; /* Increased size to match modal-close-btn */
+            cursor: pointer;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+            padding: 0; 
+            margin-left: 0.5rem; 
+            line-height: 1; 
+        }
+        #infoBoxCloseBtn:hover { transform: scale(1.1); color: #CEE5F2; } 
+
+        #toast { 
+            transition: opacity 0.3s, transform 0.3s; 
+            background-color: #CEE5F2; /* Light Blue-Gray */
+            color: #2F363F; /* Dark Steel Gray */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        /* Grid Item Styles */
+        .clipboard-item {
+            aspect-ratio: 1 / 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            border-radius: 0.5rem; 
+            padding: 0.75rem; /* Overall padding for the item */
+            cursor: pointer; 
+        }
+        .item-content {
+            flex-grow: 1;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: filter 0.3s ease, opacity 0.3s ease; 
+        }
+        .item-content-text {
+            align-items: flex-start;
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            width: 100%; 
+            height: 100%;
+            font-size: 0.875rem;
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            padding: 0 0.5rem; 
+            text-align: left; 
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            color: #EEF3F8; 
+        }
+        .item-content-text p {
+            display: block; 
+            overflow: visible; 
+            margin: 0; 
+        }
+        .item-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .item-actions {
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centering magic */
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            gap: 6px; 
+            opacity: 0; 
+            transition: opacity 0.2s ease-in-out;
+            z-index: 10; 
+            background: none; /* No background for the action container */
+            border: none; /* No border for the action container */
+            padding: 0; /* No padding for the action container */
+        }
+        .clipboard-item:hover .item-actions {
+            opacity: 1; 
+        }
+        .clipboard-item:hover .item-content {
+            filter: blur(5px); /* Blur content on hover */
+            opacity: 0.5; /* Slightly fade content on hover */
+        }
+        .item-actions button {
+            width: 36px; /* Slightly larger buttons for better touch target */
+            height: 36px; /* Slightly larger buttons for better touch target */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px; /* Fully rounded/circular buttons */
+            /* Add a subtle glow/shadow to buttons on hover */
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .item-actions button:hover {
+            transform: scale(1.1); /* Pop on hover */
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+        }
+        .item-meta {
+            padding: 4px 8px;
+            background: rgba(47, 54, 63, 0.7); /* Darker Steel Gray with transparency */
+            backdrop-filter: blur(4px); 
+            font-size: 10px;
+            color: #A1B2C0; 
+            text-align: center;
+            width: 100%;
+            position: absolute; 
+            bottom: 0;
+            left: 0;
+            border-bottom-left-radius: 0.5rem; 
+            border-bottom-right-radius: 0.5rem; 
+            transition: filter 0.3s ease, opacity 0.3s ease; 
+        }
+        .clipboard-item:hover .item-meta {
+            filter: blur(5px); /* Blur metadata on hover */
+            opacity: 0.5; /* Slightly fade metadata on hover */
+        }
+
+        /* Drag and Drop styles */
+        #noteInput.drag-over {
+            border: 2px dashed #A1B2C0; 
+            background-color: #455059; 
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.7); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        /* FIX: Increase z-index for confirmModal to ensure it appears on top */
+        #confirmModal {
+            z-index: 101; 
+        }
+
+        .modal-content {
+            background-color: #455059; /* Darker Steel Gray */
+            color: #EEF3F8; 
+            padding: 1rem; 
+            border-radius: 0.5rem;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6); 
+            /* FIX: Use min for max-width on modal content */
+            max-width: min(90vw, 500px); 
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid #8C9DAA; /* Lighter Steel Gray */
+            display: flex;
+            flex-direction: column;
+            width: auto; /* Allow width to be determined by content */
+            min-width: 300px; /* Ensure a minimum width for usability */
+        }
+        .modal-content img {
+            max-width: 100%;
+            height: auto;
+        }
+        .modal-content pre {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            margin-bottom: 0; 
+            border-bottom: 1px solid rgba(238, 243, 248, 0.1); 
+        }
+        .modal-action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #CEE5F2; 
+            cursor: pointer;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+            padding: 0; 
+            margin-left: 0.5rem; 
+            line-height: 1; 
+        }
+        .modal-action-buttons .btn-skeuo, .modal-action-buttons .btn-danger {
+            width: 32px; 
+            height: 32px;
+            font-size: 1.25rem; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px; 
+        }
+
+        /* Mobile-first responsive adjustments from user suggestions */
+        @media (max-width: 640px) {
+            .clickboard-header {
+                font-size: clamp(2rem, 12vw, 4rem) !important;
+                line-height: 1.1;
+            }
+            .max-w-7xl {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+                padding-top: 1rem !important; /* Added for consistency with new py-4 */
+                padding-bottom: 1rem !important; /* Added for consistency with new py-4 */
+            }
+            main {
+                gap: 1.5rem !important;
+            }
+            .modal-content {
+                max-width: 95vw !important;
+                margin: 1rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main content wrapper with centralized padding and gap -->
+    <!-- Updated padding classes: px-2 sm:px-4 md:px-8 py-4 sm:py-8 -->
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 md:px-8 py-4 sm:py-8 flex flex-col gap-8 flex-grow min-h-screen"> 
+        <!-- Header -->
+        <header class="text-center" id="appHeader"> 
+            <!-- The font-size for clickboard-header is now controlled by CSS, so Tailwind classes are less critical here but kept for clarity -->
+            <h1 class="font-bold clickboard-header">Clickboard</h1>
+        </header>
+
+        <!-- InfoBox: Moved out of the left column to prevent affecting its alignment with the right column -->
+        <div id="infoBox" class="paper-note p-6 rounded-lg relative w-full"> 
+             <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-bold font-michroma text-gray-200 mt-0">How it Works</h3>
+                <button id="infoBoxCloseBtn" class="modal-close-btn">&times;</button>
+             </div>
+             <p class="text-sm text-gray-300">This app uses your browser's <strong class="font-semibold">localStorage</strong> to save your Clickboard history on this device. Nothing is ever sent to a server. Items should persist between browser sessions and reboots, but it is not recommended to keep sensitive data here.</p>
+        </div>
+
+        <!-- Two-column content area, now directly responsible for main content alignment -->
+        <main class="flex flex-wrap lg:flex-nowrap gap-8 items-start flex-grow"> 
+            <!-- Left Column: Now only contains the addNotePanel -->
+            <div class="w-full lg:w-1/3"> 
+                <div id="addNotePanel" class="paper-note paper-note-interactive p-6 rounded-lg w-full min-h-[200px]"> 
+                    <div class="space-y-4">
+                        <textarea id="noteInput" class="w-full h-32 p-3 rounded-md input-skeuo focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Type or paste text/image here, or drag and drop an image..."></textarea>
+                        <!-- MODIFIED: Changed to always use flex-row and flex-nowrap to keep buttons side-by-side -->
+                        <div class="flex flex-row flex-nowrap gap-4 items-center">
+                             <!-- MODIFIED: Removed w-full, rely on flex-1 for width distribution -->
+                             <button id="addNoteBtn" class="flex-1 btn-skeuo font-bold py-2 px-4">Add Item</button> 
+                            <label for="imageInput" class="flex-1 btn-skeuo font-bold py-2 px-4 cursor-pointer text-center">Add Image File</label>
+                            <input type="file" id="imageInput" class="hidden" accept="image/*">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Occupies remaining width -->
+            <div class="w-full lg:w-2/3">
+                <div class="paper-note p-6 rounded-lg min-h-[200px]"> <!-- Added min-h to the content area -->
+                    <!-- MODIFIED: Main flex container for search/sort/clear.
+                         flex-col-reverse for mobile stack, sm:flex-row for desktop side-by-side.
+                         sm:justify-between to push search/sort group left and Clear All button right. -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center border-b border-gray-700 pb-4 gap-4 mb-4 sm:justify-between">
+                        <!-- Search Input: Full width on mobile, max-w-xs on sm+ -->
+                        <input type="search" id="searchInput" placeholder="Search..." class="input-skeuo rounded-md px-3 py-1.5 w-full sm:max-w-xs text-sm">
+                        
+                        <!-- Container for Sort by and Clear All on the second line (mobile) -->
+                        <div class="flex justify-between items-center w-full sm:w-auto gap-4">
+                            <!-- Sort by and dropdown -->
+                            <div class="flex items-center gap-2">
+                                <label for="sort" class="text-sm font-medium">Sort by:</label>
+                                <select id="sort" class="select-skeuo rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-blue-400 min-w-0">
+                                    <option value="date_desc">Date (Newest)</option>
+                                    <option value="date_asc">Date (Oldest)</option>
+                                    <option value="size_desc">Size (Largest)</option>
+                                    <option value="size_asc">Size (Smallest)</option>
+                                    <option value="type">Type</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Clear All button: pushed to the right on mobile and sm+ -->
+                            <button id="clearAllBtn" class="btn-danger font-bold py-1.5 px-3 text-sm rounded-md whitespace-nowrap">Clear All</button>
+                        </div>
+                    </div>
+                    <div id="clipboardHistory" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                       <div id="emptyState" class="text-center py-16 col-span-full">
+                           <p class="text-gray-400">Your Clickboard is Empty.</p> 
+                           <p class="text-sm text-gray-200">Add an item to get started!</p> 
+                       </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Confirmation Modal & Toast -->
+    <!-- Updated z-index for confirmModal to be higher than expandModal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 z-[101]"><div class="paper-note rounded-lg p-8 max-w-sm w-full"><p id="confirmModalText" class="text-center text-lg mb-6"></p><div class="flex justify-center gap-4"><button id="confirmModalCancel" class="btn-skeuo font-bold py-2 px-6">Cancel</button><button id="confirmModalConfirm" class="btn-danger font-bold py-2 px-6">Confirm</button></div></div></div>
+    <div id="toast" class="fixed bottom-5 right-5 py-2 px-4 rounded-lg shadow-lg opacity-0 transform translate-y-2">Copied!</div>
+
+    <!-- Expand Text/Image Modal -->
+    <div id="expandModal" class="modal hidden">
+        <div class="modal-content paper-note">
+            <div class="modal-header">
+                <div id="modalActionButtons" class="modal-action-buttons">
+                    <!-- Action buttons will be dynamically added here -->
+                </div>
+                <!-- Close button for the modal, styled to match infoBoxCloseBtn -->
+                <button class="modal-close-btn" id="expandModalCloseBtn">&times;</button>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <!-- Expanded content (text or image) will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const DOM = {
+            noteInput: document.getElementById('noteInput'),
+            addNoteBtn: document.getElementById('addNoteBtn'),
+            imageInput: document.getElementById('imageInput'),
+            clipboardHistory: document.getElementById('clipboardHistory'),
+            sortSelect: document.getElementById('sort'),
+            searchInput: document.getElementById('searchInput'),
+            emptyState: document.getElementById('emptyState'),
+            infoBox: document.getElementById('infoBox'),
+            infoBoxCloseBtn: document.getElementById('infoBoxCloseBtn'),
+            addNotePanel: document.getElementById('addNotePanel'), 
+            // Corrected ID for clearAllBtn
+            clearAllBtn: document.getElementById('clearAllBtn'), 
+            confirmModal: document.getElementById('confirmModal'),
+            confirmModalText: document.getElementById('confirmModalText'),
+            confirmModalConfirm: document.getElementById('confirmModalConfirm'),
+            confirmModalCancel: document.getElementById('confirmModalCancel'),
+            toast: document.getElementById('toast'),
+            expandModal: document.getElementById('expandModal'),
+            modalActionButtons: document.getElementById('modalActionButtons'),
+            modalBody: document.getElementById('modalBody'),
+            expandModalCloseBtn: document.getElementById('expandModalCloseBtn'),
+            appHeader: document.getElementById('appHeader'), 
+        };
+
+        let onConfirmCallback = null;
+        let itemsCache = [];
+
+        // Define the desired equidistant spacing value
+        const EQUIDISTANT_SPACING = '2rem'; // 32px
+
+        /**
+         * SVG icon properties for consistency across buttons.
+         * The xmlns attribute is explicitly set in the <svg> tag, so it's removed here to prevent duplication errors.
+         */
+        const ICON_PROPS = `width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"`;
+
+        /**
+         * Helper function to create an action button HTML string with an SVG icon.
+         * @param {string} className - Additional classes for the button.
+         * @param {string} title - Title for the tooltip.
+         * @param {string} svgInner - SVG path data for the icon.
+         * @param {string} [dataAttribute=''] - Optional data attribute (e.g., data-name for save).
+         * @param {string} [dataValue=''] - Optional value for the data attribute.
+         * @returns {string} The HTML string for the button.
+         */
+        function createActionButtonHTML(className, title, svgInner, dataAttribute = '', dataValue = '') {
+            const dataHtml = dataAttribute && dataValue ? `${dataAttribute}="${dataValue}"` : '';
+            // Ensure xmlns is part of the <svg> tag, not repeated in ICON_PROPS
+            return `<button class="${className}" title="${title}" ${dataHtml}><svg xmlns="http://www.w3.org/2000/svg" ${ICON_PROPS}>${svgInner}</svg></button>`;
+        }
+
+        /**
+         * Retrieves clipboard items from localStorage.
+         * Caches items to avoid repeated localStorage access.
+         * @returns {Array} An array of clipboard items.
+         */
+        function getClipboardItems() {
+            if (itemsCache.length === 0) {
+                try {
+                    itemsCache = JSON.parse(localStorage.getItem('clickboardItems') || '[]');
+                } catch (e) {
+                    console.error("Error parsing clipboard items from localStorage:", e);
+                    itemsCache = []; // Reset to empty array if parsing fails
+                }
+            }
+            return itemsCache;
+        }
+
+        /**
+         * Saves clipboard items to localStorage and triggers a re-render.
+         * @param {Array} items - The array of items to save.
+         */
+        function saveClipboardItems(items) {
+            try {
+                localStorage.setItem('clickboardItems', JSON.stringify(items));
+                itemsCache = items; // Update the cache
+                renderItems();
+            }
+            catch (e) {
+                console.error("Error saving clipboard items to localStorage:", e);
+                showToast('Failed to save data. Storage might be full.');
+            }
+        }
+
+        /**
+         * Adds a new item to the clipboard history.
+         * @param {Object} itemData - The data for the new item (type, content, size, name).
+         */
+        function addItem(itemData) {
+            const items = getClipboardItems();
+            const newItem = { id: Date.now(), timestamp: new Date().toISOString(), ...itemData };
+            saveClipboardItems([newItem, ...items]); // Add new item to the beginning
+        }
+
+        /**
+         * Deletes an item from the clipboard history by its ID.
+         * @param {string|number} id - The ID of the item to delete.
+         */
+        function deleteItem(id) {
+            saveClipboardItems(getClipboardItems().filter(item => item.id != id));
+            hideExpandModal(); // Hide modal if the deleted item was open
+        }
+
+        /**
+         * Clears all items from the clipboard history and resets info box status.
+         */
+        function clearAllItems() {
+            showConfirmModal('Delete ALL items?', () => {
+                localStorage.removeItem('clickboardItems');
+                localStorage.removeItem('clickboardInfoDismissed'); // This makes it re-appear
+                itemsCache = []; // Clear the cache
+                handleInfoBox(false); // Make info box appear immediately without animation
+                renderItems(); // Re-render
+            });
+        }
+
+        /**
+         * Renders all clipboard items based on current search and sort criteria.
+         * Note: The original code for renderItems() is extensive and unchanged.
+         */
+        function renderItems() {
+            let items = getClipboardItems();
+            const searchTerm = DOM.searchInput.value.toLowerCase();
+            
+            // Filter items based on search term (content for text, name for image)
+            if (searchTerm) {
+                items = items.filter(item => {
+                    if (item.type === 'text' && item.content.toLowerCase().includes(searchTerm)) {
+                        return true;
+                    }
+                    if (item.type === 'image' && item.name && item.name.toLowerCase().includes(searchTerm)) {
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            
+            items = sortItems(items); // Sort the filtered items
+            DOM.clipboardHistory.innerHTML = ''; // Clear existing items
+
+            // Display empty state if no items
+            if (items.length === 0) {
+                DOM.clipboardHistory.appendChild(DOM.emptyState);
+                DOM.emptyState.style.display = 'block';
+                return;
+            }
+            
+            DOM.emptyState.style.display = 'none'; // Hide empty state
+
+            items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'clipboard-item paper-note paper-note-interactive';
+                itemElement.dataset.id = item.id;
+                // Store entire item as a stringified JSON for easy retrieval in modal
+                itemElement.dataset.item = JSON.stringify(item); 
+
+                let contentHtml, itemActions;
+                
+                // Common buttons
+                const deleteBtnHTML = createActionButtonHTML('delete-btn btn-danger', 'Delete', '<polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>');
+                const copyBtnHTML = createActionButtonHTML('copy-btn btn-skeuo', 'Copy', '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>');
+                
+                if (item.type === 'text') {
+                    contentHtml = `<div class="item-content item-content-text"><p title="${escapeHTML(item.content)}">${escapeHTML(item.content)}</p></div>`;
+                    itemActions = `<div class="item-actions">${copyBtnHTML}${deleteBtnHTML}</div>`;
+                } else if (item.type === 'image') {
+                    // Added alt attribute for the image
+                    contentHtml = `<div class="item-content"><img src="${item.content}" alt="${escapeHTML(item.name || 'Image')}"></div>`;
+                    // Corrected save icon SVG path
+                    const saveBtnHTML = createActionButtonHTML('save-btn btn-skeuo', 'Save', '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>');
+                    itemActions = `<div class="item-actions">${copyBtnHTML}${saveBtnHTML}${deleteBtnHTML}</div>`;
+                }
+
+                itemElement.innerHTML = `
+                    ${itemActions}
+                    ${contentHtml}
+                    <div class="item-meta">${formatDate(item.timestamp)} &bull; ${formatSize(item.size)}</div>
+                `;
+                DOM.clipboardHistory.appendChild(itemElement);
+            });
+        }
+        
+        /**
+         * Manages the visibility and collapse/expand of the "How it Works" info box.
+         * @param {boolean} [animate=false] - If true, applies smooth transitions.
+         */
+        function handleInfoBox(animate = false) {
+            if (!DOM.infoBox) return;
+
+            const isDismissed = localStorage.getItem('clickboardInfoDismissed') === 'true';
+
+            DOM.infoBox.style.transition = animate ? 'opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, padding 0.3s ease-in-out, margin-bottom 0.3s ease-in-out' : 'none';
+            DOM.infoBox.style.overflow = 'hidden'; 
+
+            if (isDismissed) {
+                DOM.infoBox.style.maxHeight = '0';
+                DOM.infoBox.style.paddingTop = '0';
+                DOM.infoBox.style.paddingBottom = '0';
+                DOM.infoBox.style.marginBottom = '0';
+                DOM.infoBox.style.opacity = '0';
+                DOM.infoBox.style.pointerEvents = 'none';
+            } else {
+                DOM.infoBox.style.maxHeight = 'none'; 
+                const naturalHeight = DOM.infoBox.scrollHeight;
+                DOM.infoBox.style.maxHeight = '0'; 
+                
+                DOM.infoBox.offsetHeight; 
+
+                DOM.infoBox.style.maxHeight = naturalHeight + 'px'; 
+                DOM.infoBox.style.paddingTop = '1.5rem'; 
+                DOM.infoBox.style.paddingBottom = '1.5rem';
+                DOM.infoBox.style.marginBottom = '2rem'; 
+                DOM.infoBox.style.opacity = '1';
+                DOM.infoBox.style.pointerEvents = 'auto';
+
+                DOM.infoBox.addEventListener('transitionend', function handler() {
+                    if (localStorage.getItem('clickboardInfoDismissed') !== 'true') { 
+                        DOM.infoBox.style.maxHeight = 'none'; 
+                    }
+                    DOM.infoBox.removeEventListener('transitionend', handler);
+                }, {once: true});
+            }
+        }
+
+        /**
+         * Displays the confirmation modal.
+         * @param {string} text - The message to display in the modal.
+         * @param {Function} callback - The function to execute if confirmed.
+         */
+        function showConfirmModal(text, callback) {
+            DOM.confirmModalText.textContent = text;
+            onConfirmCallback = callback;
+            DOM.confirmModal.classList.remove('hidden');
+            DOM.confirmModal.classList.add('flex');
+            document.body.classList.add('modal-open'); 
+        }
+
+        /**
+         * Hides the confirmation modal.
+         */
+        function hideConfirmModal() {
+            DOM.confirmModal.classList.add('hidden');
+            DOM.confirmModal.classList.remove('flex');
+            onConfirmCallback = null;
+            document.body.classList.remove('modal-open'); 
+        }
+
+        /**
+         * Displays the expand modal with the given item content and action buttons.
+         * @param {Object} item - The clipboard item object to display.
+         */
+        function showExpandModal(item) {
+            DOM.modalActionButtons.innerHTML = ''; 
+            DOM.modalBody.innerHTML = ''; 
+
+            const copyBtnModal = document.createElement('button');
+            copyBtnModal.className = 'copy-btn btn-skeuo';
+            copyBtnModal.title = 'Copy';
+            copyBtnModal.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" ${ICON_PROPS}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+            copyBtnModal.onclick = () => copyToClipboard(item.content);
+            DOM.modalActionButtons.appendChild(copyBtnModal);
+
+            if (item.type === 'image') {
+                const saveBtnModal = document.createElement('button');
+                saveBtnModal.className = 'save-btn btn-skeuo';
+                saveBtnModal.title = 'Save';
+                saveBtnModal.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" ${ICON_PROPS}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`;
+                saveBtnModal.onclick = () => saveImage(item.content, item.name || 'image.png');
+                DOM.modalActionButtons.appendChild(saveBtnModal);
+
+                const imgElement = document.createElement('img');
+                imgElement.src = item.content;
+                imgElement.alt = item.name || 'Expanded Image';
+                DOM.modalBody.appendChild(imgElement);
+
+            } else if (item.type === 'text') {
+                const preElement = document.createElement('pre');
+                preElement.className = 'whitespace-pre-wrap break-words text-gray-200';
+                preElement.textContent = item.content;
+                DOM.modalBody.appendChild(preElement);
+            }
+
+            const deleteBtnModal = document.createElement('button');
+            deleteBtnModal.className = 'delete-btn btn-danger';
+            deleteBtnModal.title = 'Delete';
+            deleteBtnModal.onclick = () => showConfirmModal('Delete this item permanently?', () => deleteItem(item.id));
+            deleteBtnModal.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" ${ICON_PROPS}><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+            DOM.modalActionButtons.appendChild(deleteBtnModal);
+
+            DOM.expandModal.classList.remove('hidden');
+            DOM.expandModal.classList.add('flex');
+            document.body.classList.add('modal-open'); 
+        }
+
+        /**
+         * Hides the expand modal.
+         */
+        function hideExpandModal() {
+            DOM.expandModal.classList.add('hidden');
+            DOM.expandModal.classList.remove('flex');
+            DOM.modalBody.innerHTML = ''; 
+            DOM.modalActionButtons.innerHTML = ''; 
+            document.body.classList.remove('modal-open'); 
+        }
+
+        /**
+         * Displays a toast notification with a message.
+         * @param {string} message - The message to display.
+         */
+        function showToast(message) {
+            DOM.toast.textContent = message;
+            DOM.toast.classList.remove('opacity-0', 'translate-y-2');
+            setTimeout(() => DOM.toast.classList.add('opacity-0', 'translate-y-2'), 2000);
+        }
+
+        /**
+         * Copies text to the clipboard. Uses modern API if available, falls back to execCommand.
+         * @param {string} text - The text to copy.
+         */
+        function copyToClipboard(text) {
+            const fallback = () => {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Copied!');
+                } catch (err) {
+                    showToast('Failed to copy!');
+                }
+                document.body.removeChild(textArea);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(fallback);
+            } else {
+                fallback();
+            }
+        }
+        
+        /**
+         * Saves an image (data URL) as a downloadable file.
+         * @param {string} dataUrl - The data URL of the image.
+         * @param {string} filename - The desired filename for the downloaded image.
+         */
+        function saveImage(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        /**
+         * Handles processing of an image file (from input, paste, or drag/drop).
+         * @param {File} file - The image file to process.
+         */
+        function handleImageFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => addItem({ type: 'image', content: e.target.result, size: file.size, name: file.name || `Pasted Image ${new Date().toLocaleTimeString()}` });
+                reader.readAsDataURL(file);
+            } else {
+                showToast('Only image files are supported for upload.');
+            }
+        }
+
+        /**
+         * Sorts an array of clipboard items based on the selected sort criteria.
+         * @param {Array} items - The array of items to sort.
+         * @returns {Array} The sorted array of items.
+         */
+        function sortItems(items) {
+            const sortBy = DOM.sortSelect.value;
+            return [...items].sort((a, b) => {
+                switch (sortBy) {
+                    case 'date_asc': return new Date(a.timestamp) - new Date(b.timestamp);
+                    case 'size_desc': return b.size - a.size;
+                    case 'size_asc': return a.size - b.size;
+                    case 'type': return a.type.localeCompare(b.type);
+                    default: return new Date(b.timestamp) - new Date(a.timestamp); // date_desc
+                }
+            });
+        }
+        
+        // Utility function to format date for display
+        function formatDate(d) { return new Date(d).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' }); }
+        // Utility function to format file size for display
+        function formatSize(b) { if(!b) return'0 B'; const k=1024, s=['B','KB','MB','GB'], i=Math.floor(Math.log(b)/Math.log(k)); return parseFloat((b/Math.pow(k,i)).toFixed(1))+' '+s[i]; }
+        // Utility function to escape HTML special characters for display
+        function escapeHTML(s) { const p=document.createElement('p'); p.appendChild(document.createTextNode(s||'')); return p.innerHTML; }
+
+        // --- Event Listeners ---
+
+        // Add note button click
+        DOM.addNoteBtn.addEventListener('click', () => {
+            const content = DOM.noteInput.value.trim();
+            if (content) { addItem({ type: 'text', content, size: content.length }); DOM.noteInput.value = ''; }
+        });
+
+        // Image file input change (manual selection via file picker)
+        DOM.imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) handleImageFile(file);
+            event.target.value = null; // Clear the input so the same file can be selected again
+        });
+        
+        // Paste event on noteInput (for pasting images from clipboard)
+        DOM.noteInput.addEventListener('paste', (event) => {
+            const items = (event.clipboardData || window.clipboardData).items;
+            for (const item of items) {
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    event.preventDefault(); // Prevent default text paste if image is present
+                    handleImageFile(item.getAsFile());
+                    return;
+                }
+            }
+        });
+
+        // Drag and Drop functionality for noteInput textarea
+        DOM.noteInput.addEventListener('dragover', (event) => {
+            event.preventDefault(); // Allow drop
+            event.stopPropagation();
+            DOM.noteInput.classList.add('drag-over'); // Add visual cue
+        });
+
+        DOM.noteInput.addEventListener('dragleave', (event) => {
+            event.stopPropagation();
+            DOM.noteInput.classList.remove('drag-over'); // Remove visual cue
+        });
+
+        DOM.noteInput.addEventListener('drop', (event) => {
+            event.preventDefault(); // Prevent browser from opening file
+            event.stopPropagation();
+            DOM.noteInput.classList.remove('drag-over'); // Remove visual cue
+
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                handleImageFile(files[0]); // Process the first dropped file
+            }
+        });
+
+        // Event delegation for clicks on clipboard items (copy, delete, save, expand)
+        DOM.clipboardHistory.addEventListener('click', (event) => {
+            const btn = event.target.closest('button');
+            const itemElement = event.target.closest('.clipboard-item');
+            if (!itemElement) return; // Must have an item element
+
+            const item = JSON.parse(itemElement.dataset.item);
+
+            // If a button was clicked *within* the item, handle that specific action
+            if (btn) {
+                if (btn.matches('.delete-btn')) {
+                    showConfirmModal('Delete this item?', () => deleteItem(item.id));
+                } else if (btn.matches('.copy-btn')) {
+                    copyToClipboard(item.content);
+                } else if (btn.matches('.save-btn')) {
+                    saveImage(item.content, item.name);
+                }
+            } else {
+                // If the click was on the item itself (not a button), expand it
+                showExpandModal(item);
+            }
+        });
+
+        // Clear all button click
+        DOM.clearAllBtn.addEventListener('click', clearAllItems); 
+        // Sort select change
+        DOM.sortSelect.addEventListener('change', renderItems);
+        // Search input change
+        DOM.searchInput.addEventListener('input', renderItems);
+        // Info box close button click
+
+        DOM.infoBoxCloseBtn.addEventListener('click', () => { 
+            localStorage.setItem('clickboardInfoDismissed', 'true'); 
+            handleInfoBox(true); // Explicitly hide with animation
+        });
+
+        // Confirmation modal confirm button click
+        DOM.confirmModalConfirm.addEventListener('click', () => { if (onConfirmCallback) onConfirmCallback(); hideConfirmModal(); });
+        // Confirmation modal cancel button click
+        DOM.confirmModalCancel.addEventListener('click', hideConfirmModal);
+        
+        // Close expand modal by clicking outside the content
+        DOM.expandModal.addEventListener('click', (event) => {
+            if (event.target === DOM.expandModal) { // Only close if clicking the overlay itself
+                hideExpandModal();
+            }
+        });
+        // Expand modal close button click (explicit X button)
+        DOM.expandModalCloseBtn.addEventListener('click', hideExpandModal);
+
+
+        // Global Escape key listener to close modals
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (!DOM.confirmModal.classList.contains('hidden')) {
+                    hideConfirmModal();
+                } else if (!DOM.expandModal.classList.contains('hidden')) {
+                    hideExpandModal();
+                }
+            }
+        });
+
+        // Initial setup calls
+        // Initial visibility check for infoBox.
+        handleInfoBox(false); // Apply initial state without animation
+
+        renderItems(); // Render initial items on page load
+    });
+    </script>
+</body>
+</html>
